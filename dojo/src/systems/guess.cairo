@@ -140,4 +140,29 @@ mod guess_system {
     fn get_epoc_day() -> u64 {
         get_block_timestamp() / 86400
     }
+
+    #[cfg(test)]
+    mod tests {
+        mod CharactersIntoArray {
+            use array::ArrayTrait;
+            use traits::{Into, TryInto};
+            use option::OptionTrait;
+            use dojo_examples::systems::guess::guess_system;
+
+            #[test]
+            #[available_gas(2000000)]
+            fn giving_word_with_characters_1() {
+                let input = 1020304050;
+                let mut expected = ArrayTrait::<u32>::new();
+                expected.append(10);
+                expected.append(20);
+                expected.append(30);
+                expected.append(40);
+                expected.append(50);
+
+                let actual = guess_system::characters_into_array(input);
+                assert(*actual.at(0) == *expected.at(0), 'error');
+            }
+        }
+    }
 }
