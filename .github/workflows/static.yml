@@ -30,16 +30,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Navigate to frontend directory
+        run: cd client/
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
           cache: 'npm'
-      - name: Move directory client
-        run: cd client/
       - name: Install dependencies & Build
         run: |
-          cd client/
           npm install
           npm run build
       - name: Setup Pages
@@ -48,7 +47,7 @@ jobs:
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload dist repository
-          path: './client/dist'
+          path: './dist'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
