@@ -2,11 +2,17 @@ use array::ArrayTrait;
 use starknet::ContractAddress;
 
 #[derive(Component, Copy, Drop, Serde, SerdeLen)]
+struct GameStats {
+    #[key]
+    id: u32,  
+    next_word_position: u32,
+}
+
+#[derive(Component, Copy, Drop, Serde, SerdeLen)]
 struct Word {
     #[key]
     epoc_day: u64,
     characters: u32,
-    len: u8
 }
 
 #[derive(Component, Copy, Drop, Serde, SerdeLen)]
