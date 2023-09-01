@@ -1,17 +1,16 @@
 import './App.css';
 import { useDojo } from './DojoContext';
 import { useComponentValue } from "@dojoengine/react";
-import { Direction, } from './dojo/createSystemCalls'
 import { EntityIndex, setComponent } from '@latticexyz/recs';
 import { useEffect } from 'react';
 import { getFirstComponentByType } from './utils';
-import { Moves, Position } from './generated/graphql';
+import { Word, Player, PlayerStatsByDay, PlayerWordAttempts } from './generated/graphql';
 
 function App() {
   const {
     setup: {
-      systemCalls: { spawn, move },
-      components: { Moves, Position },
+      systemCalls: { initiate_system, guess },
+      components: { Word, Player, PlayerStatsByDay, PlayerWordAttempts },
       network: { graphSdk, call }
     },
     account: { create, list, select, account, isDeploying }
@@ -21,8 +20,12 @@ function App() {
   const entityId = account.address;
 
   // get current component values
-  const position = useComponentValue(Position, parseInt(entityId.toString()) as EntityIndex);
-  const moves = useComponentValue(Moves, parseInt(entityId.toString()) as EntityIndex);
+  // const position = useComponentValue(Position, parseInt(entityId.toString()) as EntityIndex);
+  // const moves = useComponentValue(Moves, parseInt(entityId.toString()) as EntityIndex);
+  const word = useComponentValue(Word, parseInt(entityId.toString()) as EntityIndex);
+  const player = useComponentValue(Player, parseInt(entityId.toString()) as EntityIndex);
+  const playerStatsByDay = useComponentValue(PlayerStatsByDay, parseInt(entityId.toString()) as EntityIndex);
+  const playerWordAttempts = useComponentValue(PlayerWordAttempts, parseInt(entityId.toString()) as EntityIndex);
 
   useEffect(() => {
 
@@ -32,20 +35,30 @@ function App() {
       const { data } = await graphSdk.getEntities();
 
       if (data) {
-        let remaining = getFirstComponentByType(data.entities?.edges, 'Moves') as Moves;
-        let position = getFirstComponentByType(data.entities?.edges, 'Position') as Position;
+        // let remaining = getFirstComponentByType(data.entities?.edges, 'Moves') as Moves;
+        // let position = getFirstComponentByType(data.entities?.edges, 'Position') as Position;
+        
+        let data_word = getFirstComponentByType(data.entities?.edges, 'Word') as Word;
+        // let data_player = getFirstComponentByType(data.entities?.edges, 'Player') as Player;
+        // let data_playerStatsByDay = getFirstComponentByType(data.entities?.edges, 'PlayerStatsByDay') as PlayerStatsByDay;
+        // let data_playerWordAttempts = getFirstComponentByType(data.entities?.edges, 'PlayerWordAttempts') as PlayerWordAttempts;
 
-        setComponent(Moves, parseInt(entityId.toString()) as EntityIndex, { remaining: remaining.remaining })
-        setComponent(Position, parseInt(entityId.toString()) as EntityIndex, { x: position.x, y: position.y })
+        // setComponent(Moves, parseInt(entityId.toString()) as EntityIndex, { remaining: remaining.remaining })
+        // setComponent(Position, parseInt(entityId.toString()) as EntityIndex, { x: position.x, y: position.y })
+        
+        setComponent(Word, parseInt(entityId.toString()) as EntityIndex, { characters: data_word.characters, len: data_word.len })
+        // setComponent(Player, parseInt(entityId.toString()) as EntityIndex, { points: data_player.points, last_try: data_player.last_try })
+        // setComponent(PlayerStatsByDay, parseInt(entityId.toString()) as EntityIndex, { won: data_playerStatsByDay.won, remaining_tries: data_playerStatsByDay.remaining_tries })
+        // setComponent(PlayerWordAttempts, parseInt(entityId.toString()) as EntityIndex, { word_attempt: data_playerWordAttempts.word_attempt, word_hits: data_playerWordAttempts.word_hits })
       }
     }
     fetchData();
-  }, [account.address]);
+  }, [word]);
 
 
   return (
     <>
-      <button onClick={create}>{isDeploying ? "deploying burner" : "create burner"}</button>
+      {/* <button onClick={create}>{isDeploying ? "deploying burner" : "create burner"}</button>
       <div className="card">
         select signer:{" "}
         <select onChange={e => select(e.target.value)}>
@@ -64,8 +77,12 @@ function App() {
         <button onClick={() => move(account, Direction.Left)}>Move Left</button>
         <button onClick={() => move(account, Direction.Right)}>Move Right</button> <br />
         <button onClick={() => move(account, Direction.Down)}>Move Down</button>
-      </div>
+      </div> */}
 
+      <div className="card">
+        <button onClick={() => initiate_system(account)}>Initiate</button>
+        <div>Word: {word ? `${word['characters']}, ${word['len']}` : 'Need to Spawn'}</div>
+      </div>
     </>
   );
 }

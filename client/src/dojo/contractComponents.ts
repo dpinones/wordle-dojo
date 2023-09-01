@@ -4,12 +4,13 @@ import { defineComponent, Type as RecsType, World } from "@latticexyz/recs";
 
 export function defineContractComponents(world: World) {
   return {
-    Moves: (() => {
-      const name = "Moves";
+    Word: (() => {
+      const name = "Word";
       return defineComponent(
         world,
         {
-          remaining: RecsType.Number,
+          characters: RecsType.Number,
+          len: RecsType.Number,
         },
         {
           metadata: {
@@ -18,13 +19,43 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    Position: (() => {
-      const name = "Position";
+    Player: (() => {
+      const name = "Player";
       return defineComponent(
         world,
         {
-          x: RecsType.Number,
-          y: RecsType.Number,
+          points: RecsType.Number,
+          last_try: RecsType.Number,
+        },
+        {
+          metadata: {
+            name: name,
+          },
+        }
+      );
+    })(),
+    PlayerStatsByDay: (() => {
+      const name = "PlayerStatsByDay";
+      return defineComponent(
+        world,
+        {
+          won: RecsType.Boolean,
+          remaining_tries: RecsType.Number,
+        },
+        {
+          metadata: {
+            name: name,
+          },
+        }
+      );
+    })(),
+    PlayerWordAttempts: (() => {
+      const name = "PlayerWordAttempts";
+      return defineComponent(
+        world,
+        {
+          word_attempt: RecsType.Number,
+          word_hits: RecsType.Number,
         },
         {
           metadata: {

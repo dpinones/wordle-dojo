@@ -5,12 +5,21 @@ query getEntities {
         keys
         components {
           __typename
-          ... on Moves {
-            remaining
+          ... on Word {
+            characters
+            len
           }
-          ... on Position {
-            x
-            y
+          ... on Player {
+            points
+            last_try
+          }
+          ... on PlayerStatsByDay {
+            won
+            remaining_tries
+          }
+          ... on PlayerWordAttempts {
+            word_attempt
+            word_hits
           }
         }
       }
