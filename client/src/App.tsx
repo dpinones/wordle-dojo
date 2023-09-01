@@ -6,6 +6,15 @@ import { useEffect } from 'react';
 import { getFirstComponentByType } from './utils';
 import { Word, Player, PlayerStatsByDay, PlayerWordAttempts } from './generated/graphql';
 
+// import game
+import '@fontsource/fascinate-inline';
+import '@fontsource/clear-sans';
+import '@fontsource/clear-sans/700.css';
+
+import { ChakraProvider } from '@chakra-ui/react';
+import theme from './game/theme';
+import Main from './game/components/Main';
+
 function App() {
   const {
     setup: {
@@ -83,6 +92,9 @@ function App() {
         <button onClick={() => initiate_system(account)}>Initiate</button>
         <div>Word: {word ? `${word['characters']}, ${word['len']}` : 'Need to Spawn'}</div>
       </div>
+      <ChakraProvider theme={theme}>
+        <Main />
+      </ChakraProvider>
     </>
   );
 }

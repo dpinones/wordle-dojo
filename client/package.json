@@ -24,7 +24,14 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rxjs": "^7.8.1",
-    "starknet": "^5.14.1"
+    "starknet": "^5.14.1",
+    "@chakra-ui/react": "^2.2.1",
+    "@emotion/react": "^11.0.0",
+    "@emotion/styled": "^11.0.0",
+    "@fontsource/clear-sans": "^4.5.3",
+    "@fontsource/fascinate-inline": "^4.5.8",
+    "framer-motion": "^6.2.9",
+    "react-icons": "^3.0.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",
