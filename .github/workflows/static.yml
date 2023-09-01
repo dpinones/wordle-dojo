@@ -37,10 +37,11 @@ jobs:
           cache: 'npm'
       - name: Move directory client
         run: cd client/
-      - name: Install dependencies
-        run: npm install
-      - name: Build
-        run: npm run build
+      - name: Install dependencies & Build
+        run: |
+          cd client/
+          npm install
+          npm run build
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
