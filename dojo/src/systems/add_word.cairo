@@ -13,21 +13,21 @@ mod add_word_system {
 
     fn execute(ctx: Context, word: u32) {
         let game_stats = get!(ctx.world, WORDLE_DOJO_ID, GameStats);
-        let block =  get_block_timestamp();
-        let epoc_day =  get_block_timestamp() / 86400;
+        let epoc_day = get_block_timestamp() / 86400;
 
-        set!(ctx.world, (Word {
-            epoc_day: epoc_day + game_stats.next_word_position.into(),
-            characters: word,
-            },
-        ));
+        set!(
+            ctx.world,
+            (Word { epoc_day: epoc_day + game_stats.next_word_position.into(), characters: word, },)
+        );
 
-        set!(ctx.world, (GameStats {
-            id: WORDLE_DOJO_ID,
-            next_word_position: game_stats.next_word_position + 1,
-        }));
+        set!(
+            ctx.world,
+            (GameStats {
+                id: WORDLE_DOJO_ID, next_word_position: game_stats.next_word_position + 1,
+            })
+        );
 
-        return();
+        return ();
     }
 }
 
@@ -45,26 +45,28 @@ mod add_words {
 
     fn execute(ctx: Context, words: Array<u32>) {
         let game_stats = get!(ctx.world, WORDLE_DOJO_ID, GameStats);
-        let epoc_day =  get_block_timestamp() / 86400;
+        let epoc_day = get_block_timestamp() / 86400;
         let mut next_word_position_plus_epoc_day = epoc_day + game_stats.next_word_position.into();
         let mut i = 0;
         loop {
             if i == words.len() - 1 {
                 break;
             }
-            set!(ctx.world, (Word {
-                epoc_day: next_word_position_plus_epoc_day,
-                characters: *words.at(i),
-            }));
+            set!(
+                ctx.world,
+                (Word { epoc_day: next_word_position_plus_epoc_day, characters: *words.at(i), })
+            );
             i += 1;
             next_word_position_plus_epoc_day += 1;
         };
-        
-        set!(ctx.world, (GameStats {
-            id: WORDLE_DOJO_ID,
-            next_word_position: next_word_position_plus_epoc_day.try_into().unwrap(),
-        }));
-        
+
+        set!(
+            ctx.world,
+            (GameStats {
+                id: WORDLE_DOJO_ID,
+                next_word_position: next_word_position_plus_epoc_day.try_into().unwrap(),
+            })
+        );
     }
 }
 

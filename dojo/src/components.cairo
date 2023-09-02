@@ -4,7 +4,7 @@ use starknet::ContractAddress;
 #[derive(Component, Copy, Drop, Serde, SerdeLen)]
 struct GameStats {
     #[key]
-    id: u32,  
+    id: u32,
     next_word_position: u32,
 }
 
@@ -43,6 +43,5 @@ struct PlayerWordAttempts {
     #[key]
     attempt_number: u8,
     word_attempt: u32,
-    word_hits: u32 
+    word_hits: u32
 }
-// G O B B G has the color of hits in the word 

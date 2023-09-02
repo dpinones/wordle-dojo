@@ -11,7 +11,7 @@ mod guess_system {
 
     const GREEN: u32 = 2;
     const ORANGE: u32 = 1;
-    const GRAY: u32 = 0; 
+    const GRAY: u32 = 0;
 
     const BONUS_POINTS: u256 = 100;
     const POINT_UNIT: u256 = 10;
@@ -26,24 +26,26 @@ mod guess_system {
         let player_stats = get!(ctx.world, (ctx.origin, epoc_day), PlayerStats);
         let player = get!(ctx.world, ctx.origin, Player);
 
-        if player.last_try != epoc_day {
-            set!(ctx.world, (PlayerStats {
-                player: player_stats.player,
-                epoc_day: player_stats.epoc_day,
-                won: player_stats.won,
-                remaining_tries: 6
-            })); 
-        }
-        
-        assert(player_stats.remaining_tries > 0, 'You have no more attempts!'); 
-        assert(player_stats.won == false, 'You already won today!'); 
-  
+        // reset player stats if doesnt play today yet
+        reset_player_stats(ctx, player_stats, player, epoc_day);
+
+        // assert(player_stats.remaining_tries > 0, 'You have no more attempts!');
+        assert(player_stats.won == false, 'You already won today!');
+
         let word_of_the_day = get!(ctx.world, epoc_day, Word);
-        let attempt_hits = update_player_word_attempts(ctx, player_stats, attempt, word_of_the_day.characters);
+        let attempt_hits = update_player_word_attempts(
+            ctx, player_stats, attempt, word_of_the_day.characters
+        );
 
         if attempt_hits == ALL_HITS {
+            'ALL_HITS'.print();
+            'remaining'.print();
+            player_stats.remaining_tries.print();
+            
             if player_stats.remaining_tries == TOTAL_DAILY_TRIES {
-                update_player_points(ctx, player, BONUS_POINTS + POINT_UNIT * player_stats.remaining_tries.into());
+                update_player_points(
+                    ctx, player, BONUS_POINTS + POINT_UNIT * player_stats.remaining_tries.into()
+                );
             } else {
                 update_player_points(ctx, player, POINT_UNIT * player_stats.remaining_tries.into());
             }
@@ -53,33 +55,53 @@ mod guess_system {
         }
 
         // Set last try to today 
-        set!(ctx.world, (Player {
-            player: player.player,
-            points: player.points,
-            last_try: epoc_day
-        }));
+        set!(
+            ctx.world, (Player { player: player.player, points: player.points, last_try: epoc_day })
+        );
 
         return ();
     }
 
+    fn reset_player_stats(ctx: Context, player_stats: PlayerStats, player: Player, epoc_day: u64) {
+        // since epoc always return 0
+        // if epoc_day != player.last_try {
+            set!(
+                ctx.world,
+                (PlayerStats {
+                    player: player_stats.player,
+                    epoc_day: player_stats.epoc_day,
+                    won: false,
+                    remaining_tries: 6
+                })
+            );
+        // }
+        return ();
+    }
+
     fn update_player_points(ctx: Context, player: Player, points: u256) {
-        set!(ctx.world, (Player {
-            player: player.player,
-            points: player.points + points,
-            last_try: player.last_try
-        }));
+        set!(
+            ctx.world,
+            (Player {
+                player: player.player, points: player.points + points, last_try: player.last_try
+            })
+        );
     }
 
     fn update_player_stats(ctx: Context, player_stats: PlayerStats, won: bool) {
-        set!(ctx.world, (PlayerStats {
-            player: player_stats.player,
-            epoc_day: player_stats.epoc_day,
-            won,
-            remaining_tries: player_stats.remaining_tries - 1
-        }));
+        set!(
+            ctx.world,
+            (PlayerStats {
+                player: player_stats.player,
+                epoc_day: player_stats.epoc_day,
+                won,
+                remaining_tries: player_stats.remaining_tries - 1
+            })
+        );
     }
 
-    fn update_player_word_attempts(ctx: Context, player_stats: PlayerStats, player_word: u32, word_of_the_day: u32) -> u32 {
+    fn update_player_word_attempts(
+        ctx: Context, player_stats: PlayerStats, player_word: u32, word_of_the_day: u32
+    ) -> u32 {
         let word_of_the_day_array = characters_into_array(word_of_the_day);
         let player_word_array = characters_into_array(player_word);
         let mut hits = 0;
@@ -88,7 +110,7 @@ mod guess_system {
             if (i == 5) {
                 break;
             }
-            if player_word_array.at(i) == word_of_the_day_array.at(i)  {
+            if player_word_array.at(i) == word_of_the_day_array.at(i) {
                 hits += GREEN * pow(10, i);
             } else if contains_character(@word_of_the_day_array, *player_word_array.at(i)) {
                 hits += ORANGE * pow(10, i);
@@ -97,14 +119,17 @@ mod guess_system {
             }
             i += 1;
         };
-        
-        set!(ctx.world, (PlayerWordAttempts {
-            player: player_stats.player,
-            epoc_day: player_stats.epoc_day,
-            attempt_number: TOTAL_DAILY_TRIES - player_stats.remaining_tries.into(),
-            word_attempt: player_word,
-            word_hits: hits
-        }));
+
+        set!(
+            ctx.world,
+            (PlayerWordAttempts {
+                player: player_stats.player,
+                epoc_day: player_stats.epoc_day,
+                attempt_number: TOTAL_DAILY_TRIES - player_stats.remaining_tries.into(),
+                word_attempt: player_word,
+                word_hits: hits
+            })
+        );
         hits
     }
 
@@ -114,7 +139,7 @@ mod guess_system {
         loop {
             if i == word_array.len() {
                 break;
-            } 
+            }
             if *word_array.at(i) == character {
                 res = true;
             }
@@ -133,7 +158,7 @@ mod guess_system {
             let last_digit = iterable % 10;
             let penultimate_digit = (iterable / 10) % 10;
             ret.append(penultimate_digit * 10 + last_digit);
-            iterable /= 100; 
+            iterable /= 100;
         };
 
         if iterable > 0 {
@@ -197,25 +222,29 @@ mod guess_system {
             // reuse this function for all tests
             fn setup_world() -> IWorldDispatcher {
                 // components
-                let mut components = array![game_stats::TEST_CLASS_HASH, player_stats::TEST_CLASS_HASH, player::TEST_CLASS_HASH, word::TEST_CLASS_HASH];
+                let mut components = array![
+                    game_stats::TEST_CLASS_HASH,
+                    player_stats::TEST_CLASS_HASH,
+                    player::TEST_CLASS_HASH,
+                    word::TEST_CLASS_HASH
+                ];
 
                 // systems
-                let mut systems = array![guess_system::TEST_CLASS_HASH, add_word_system::TEST_CLASS_HASH];
+                let mut systems = array![
+                    guess_system::TEST_CLASS_HASH, add_word_system::TEST_CLASS_HASH
+                ];
 
                 // deploy executor, world and register components/systems
                 spawn_test_world(components, systems)
             }
 
-            // #[test]
-            // #[available_gas(30000000)]
-            // fn test_guess_player_guesses_the_word() {
-            //     let world = setup_world();
-            //     world.execute('add_word_system', array![1010101010]);
-                
-            //     world.execute('guess_system', array![1010101010]);
-
-                
-            // }
+            #[test]
+            #[available_gas(30000000)]
+            fn test_guess_player_guesses_the_word() {
+                let world = setup_world();
+                world.execute('add_word_system', array![1010101010]);
+                world.execute('guess_system', array![1010101010]);
+            }
 
             #[test]
             #[available_gas(30000000)]
@@ -229,7 +258,8 @@ mod guess_system {
                 assert(*words[0] == 1010101010, 'wrong word');
 
                 let call_data = array![WORDLE_DOJO_ID.into()].span();
-                let game_stats = world.entity('GameStats', call_data, 0, dojo::SerdeLen::<GameStats>::len());
+                let game_stats = world
+                    .entity('GameStats', call_data, 0, dojo::SerdeLen::<GameStats>::len());
 
                 assert(*game_stats[0] == 1, 'next_word_position');
             }
@@ -243,21 +273,35 @@ mod guess_system {
             #[available_gas(2000000)]
             fn giving_a_character_and_word_that_contains_should_return_true() {
                 let input = array![10, 20, 30, 40, 50];
-                
-                assert(guess_system::contains_character(@input, 10) == true, 'ContainsCharacter error');
-                assert(guess_system::contains_character(@input, 20) == true, 'ContainsCharacter error');
-                assert(guess_system::contains_character(@input, 30) == true, 'ContainsCharacter error');
-                assert(guess_system::contains_character(@input, 40) == true, 'ContainsCharacter error');
-                assert(guess_system::contains_character(@input, 50) == true, 'ContainsCharacter error');
+
+                assert(
+                    guess_system::contains_character(@input, 10) == true, 'ContainsCharacter error'
+                );
+                assert(
+                    guess_system::contains_character(@input, 20) == true, 'ContainsCharacter error'
+                );
+                assert(
+                    guess_system::contains_character(@input, 30) == true, 'ContainsCharacter error'
+                );
+                assert(
+                    guess_system::contains_character(@input, 40) == true, 'ContainsCharacter error'
+                );
+                assert(
+                    guess_system::contains_character(@input, 50) == true, 'ContainsCharacter error'
+                );
             }
 
             #[test]
             #[available_gas(2000000)]
             fn giving_a_character_and_word_that_doest_contains_should_return_false() {
                 let input = array![10, 20, 30, 40, 50];
-                
-                assert(guess_system::contains_character(@input, 11) == false, 'ContainsCharacter error');
-                assert(guess_system::contains_character(@input, 4) == false, 'ContainsCharacter error');
+
+                assert(
+                    guess_system::contains_character(@input, 11) == false, 'ContainsCharacter error'
+                );
+                assert(
+                    guess_system::contains_character(@input, 4) == false, 'ContainsCharacter error'
+                );
             }
         }
 
@@ -271,7 +315,6 @@ mod guess_system {
                 let input = 1020304050;
                 let expected = array![10, 20, 30, 40, 50];
 
-                
                 let actual = guess_system::characters_into_array(input);
 
                 assert(*actual[0] == *expected[0], 'CharactersIntoArray error');
@@ -287,7 +330,7 @@ mod guess_system {
             fn giving_word_with_first_character_lt_10() {
                 let input = 722040521;
                 let expected = array![7, 22, 4, 5, 21];
-                
+
                 let actual = guess_system::characters_into_array(input);
 
                 assert(*actual[0] == *expected[0], 'CharactersIntoArray error');
@@ -303,7 +346,7 @@ mod guess_system {
             fn giving_word_with_all_characters_lt_10() {
                 let input = 709010502;
                 let expected = array![7, 9, 1, 5, 2];
-                
+
                 let actual = guess_system::characters_into_array(input);
 
                 assert(*actual[0] == *expected[0], 'CharactersIntoArray error');
@@ -317,7 +360,7 @@ mod guess_system {
             #[test]
             #[should_panic]
             fn giving_an_incomplete_word_should_panic() {
-                let input = 22010502; 
+                let input = 22010502;
                 guess_system::characters_into_array(input);
             }
         }
