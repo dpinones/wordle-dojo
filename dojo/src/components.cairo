@@ -20,12 +20,12 @@ struct Player {
     #[key]
     player: ContractAddress,
     points: u256,
-    last_try: u256
+    last_try: u64
 }
 
 // (player, epoc_day) -> value
 #[derive(Component, Copy, Drop, Serde, SerdeLen)]
-struct PlayerStatsByDay {
+struct PlayerStats {
     #[key]
     player: ContractAddress,
     #[key]

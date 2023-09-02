@@ -7,22 +7,27 @@ mod add_word_system {
     use dojo::world::Context;
     use dojo_examples::components::{Word, GameStats};
     use starknet::get_block_timestamp;
+    use debug::PrintTrait;
 
     const WORDLE_DOJO_ID: u32 = 1;
 
     fn execute(ctx: Context, word: u32) {
         let game_stats = get!(ctx.world, WORDLE_DOJO_ID, GameStats);
+        let block =  get_block_timestamp();
         let epoc_day =  get_block_timestamp() / 86400;
 
         set!(ctx.world, (Word {
             epoc_day: epoc_day + game_stats.next_word_position.into(),
             characters: word,
-        }));
+            },
+        ));
 
         set!(ctx.world, (GameStats {
             id: WORDLE_DOJO_ID,
             next_word_position: game_stats.next_word_position + 1,
         }));
+
+        return();
     }
 }
 
