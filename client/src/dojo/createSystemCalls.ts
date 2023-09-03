@@ -3,102 +3,38 @@ import { Account, InvokeTransactionReceiptResponse, shortString } from "starknet
 import { EntityIndex, getComponentValue, setComponent } from "@latticexyz/recs";
 import { uuid } from "@latticexyz/utils";
 import { ClientComponents } from "./createClientComponents";
+import { updatePositionWithDirection } from "../utils";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
     { execute, contractComponents }: SetupNetworkResult,
-    { Word, Player, PlayerStatsByDay, PlayerWordAttempts }: ClientComponents
 ) {
-
-    const initiate_system = async (signer: Account) => {
-
-        // const entityId = parseInt(signer.address) as EntityIndex;
-
-        // const positionId = uuid();
-        // Position.addOverride(positionId, {
-        //     entity: entityId,
-        //     value: updatePositionWithDirection(direction, getComponentValue(Position, entityId) as Position),
-        // });
-
-        // const movesId = uuid();
-        // Moves.addOverride(movesId, {
-        //     entity: entityId,
-        //     value: { remaining: (getComponentValue(Moves, entityId)?.remaining || 0) - 1 },
-        // });
+    const add_word_system = async (signer: Account, word: number) => {
 
         try {
-            const tx = await execute(signer, "initiate_system", []);
+            const tx = await execute(signer, "add_word_system", [word]);
 
             console.log(tx)
             const receipt = await signer.waitForTransaction(tx.transaction_hash, { retryInterval: 100 })
 
-            const events = parseEvent(receipt)
-            const entity = parseInt(events[0].entity.toString()) as EntityIndex
-
-            // const movesEvent = events[0] as Moves;
-            // setComponent(contractComponents.Moves, entity, { remaining: movesEvent.remaining })
-
-            // const positionEvent = events[1] as Position;
-            // setComponent(contractComponents.Position, entity, { x: positionEvent.x, y: positionEvent.y })
-
-            const wordEvent = events[0] as Word;
-            setComponent(contractComponents.Word, entity, { characters: wordEvent.characters , len: wordEvent.len })
         } catch (e) {
             console.log(e)
-            // Position.removeOverride(positionId);
-            // Moves.removeOverride(movesId);
-        } finally {
-            // Position.removeOverride(positionId);
-            // Moves.removeOverride(movesId);
         }
     };
 
-    const guess = async (signer: Account, attempt: number) => {
-
-        // const entityId = parseInt(signer.address) as EntityIndex;
-
-        // const positionId = uuid();
-        // Position.addOverride(positionId, {
-        //     entity: entityId,
-        //     value: updatePositionWithDirection(direction, getComponentValue(Position, entityId) as Position),
-        // });
-
-        // const movesId = uuid();
-        // Moves.addOverride(movesId, {
-        //     entity: entityId,
-        //     value: { remaining: (getComponentValue(Moves, entityId)?.remaining || 0) - 1 },
-        // });
-
+    const guess = async (signer: Account) => {
         try {
-            const tx = await execute(signer, "move", [attempt]);
-
+            const tx = await execute(signer, "guess", []);
             console.log(tx)
-            const receipt = await signer.waitForTransaction(tx.transaction_hash, { retryInterval: 100 })
-
-            console.log(receipt)
-
-            const events = parseEvent(receipt)
-            const entity = parseInt(events[0].entity.toString()) as EntityIndex
-
-            // const movesEvent = events[0] as Moves;
-            // setComponent(contractComponents.Moves, entity, { remaining: movesEvent.remaining })
-
-            // const positionEvent = events[1] as Position;
-            // setComponent(contractComponents.Position, entity, { x: positionEvent.x, y: positionEvent.y })
+            await signer.waitForTransaction(tx.transaction_hash, { retryInterval: 100 })
         } catch (e) {
-            // console.log(e)
-            // Position.removeOverride(positionId);
-            // Moves.removeOverride(movesId);
-        } finally {
-            // Position.removeOverride(positionId);
-            // Moves.removeOverride(movesId);
+            console.log(e)
         }
-
     };
 
     return {
-        initiate_system,
+        add_word_system,
         guess
     };
 }
@@ -106,7 +42,17 @@ export function createSystemCalls(
 
 // TODO: Move types and generalise this
 
+export enum Direction {
+    Left = 0,
+    Right = 1,
+    Up = 2,
+    Down = 3,
+}
+
 export enum ComponentEvents {
+    Moves = "Moves",
+    Position = "Position",
+    GameStats = "GameStats",
     Word = "Word",
     Player = "Player",
     PlayerStatsByDay = "PlayerStatsByDay",
@@ -118,9 +64,21 @@ export interface BaseEvent {
     entity: string;
 }
 
+export interface Moves extends BaseEvent {
+    remaining: number;
+}
+
+export interface Position extends BaseEvent {
+    x: number;
+    y: number;
+}
+
+export interface GameStats extends BaseEvent {
+    next_word_position: number;
+}
+
 export interface Word extends BaseEvent {
     characters: number;
-    len: number;
 }
 
 export interface Player extends BaseEvent {
@@ -140,19 +98,62 @@ export interface PlayerWordAttempts extends BaseEvent {
 
 export const parseEvent = (
     receipt: InvokeTransactionReceiptResponse
-): Array<Word | Player | PlayerStatsByDay | PlayerWordAttempts> => {
+): Array<Moves | Position | GameStats | Word | Player | PlayerStatsByDay | PlayerWordAttempts> => {
     if (!receipt.events) {
         throw new Error(`No events found`);
     }
 
-    let events: Array<Word | Player | PlayerStatsByDay | PlayerWordAttempts> = [];
+    let events: Array<Moves | Position | GameStats | Word | Player | PlayerStatsByDay | PlayerWordAttempts> = [];
 
     for (let raw of receipt.events) {
         const decodedEventType = shortString.decodeShortString(raw.data[0]);
 
         switch (decodedEventType) {
-            case ComponentEvents.Word:
+            case ComponentEvents.Moves:
+                if (raw.data.length < 6) {
+                    throw new Error('Insufficient data for Moves event.');
+                }
+
+                const movesData: Moves = {
+                    type: ComponentEvents.Moves,
+                    entity: raw.data[2],
+                    remaining: Number(raw.data[5]),
+                };
+
+                events.push(movesData);
+                break;
+
+            case ComponentEvents.Position:
                 if (raw.data.length < 7) {
+                    throw new Error('Insufficient data for Position event.');
+                }
+
+                const positionData: Position = {
+                    type: ComponentEvents.Position,
+                    entity: raw.data[2],
+                    x: Number(raw.data[5]),
+                    y: Number(raw.data[6]),
+                };
+
+                events.push(positionData);
+                break;
+
+            case ComponentEvents.GameStats:
+                if (raw.data.length < 6) {
+                    throw new Error('Insufficient data for Word event.');
+                }
+
+                const gameStatsData: GameStats = {
+                    type: ComponentEvents.GameStats,
+                    entity: raw.data[2],
+                    next_word_position: Number(raw.data[5]),
+                };
+
+                events.push(gameStatsData);
+                break;
+
+            case ComponentEvents.Word:
+                if (raw.data.length < 6) {
                     throw new Error('Insufficient data for Word event.');
                 }
 
@@ -160,7 +161,6 @@ export const parseEvent = (
                     type: ComponentEvents.Word,
                     entity: raw.data[2],
                     characters: Number(raw.data[5]),
-                    len: Number(raw.data[6]),
                 };
 
                 events.push(wordData);

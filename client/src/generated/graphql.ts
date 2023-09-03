@@ -16,16 +16,17 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  ContractAddress: { input: any; output: any; }
   Cursor: { input: any; output: any; }
   DateTime: { input: any; output: any; }
   bool: { input: any; output: any; }
   felt252: { input: any; output: any; }
   u8: { input: any; output: any; }
   u32: { input: any; output: any; }
-  u256: { input: any; output: any; }
+  u64: { input: any; output: any; }
 };
 
-export type ComponentUnion = Player | PlayerStatsByDay | PlayerWordAttempts | Word;
+export type ComponentUnion = Epoc | GameStats | Player | PlayerStats | PlayerWordAttempts | Ranking | Word;
 
 export enum Direction {
   Asc = 'ASC',
@@ -54,6 +55,42 @@ export type EntityEdge = {
   node?: Maybe<Entity>;
 };
 
+export type Epoc = {
+  __typename?: 'Epoc';
+  entity?: Maybe<Entity>;
+  epoc?: Maybe<Scalars['u64']['output']>;
+};
+
+export type EpocConnection = {
+  __typename?: 'EpocConnection';
+  edges?: Maybe<Array<Maybe<EpocEdge>>>;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type EpocEdge = {
+  __typename?: 'EpocEdge';
+  cursor: Scalars['Cursor']['output'];
+  node?: Maybe<Epoc>;
+};
+
+export type EpocOrder = {
+  direction: Direction;
+  field: EpocOrderOrderField;
+};
+
+export enum EpocOrderOrderField {
+  Epoc = 'EPOC'
+}
+
+export type EpocWhereInput = {
+  epoc?: InputMaybe<Scalars['Int']['input']>;
+  epocGT?: InputMaybe<Scalars['Int']['input']>;
+  epocGTE?: InputMaybe<Scalars['Int']['input']>;
+  epocLT?: InputMaybe<Scalars['Int']['input']>;
+  epocLTE?: InputMaybe<Scalars['Int']['input']>;
+  epocNEQ?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type Event = {
   __typename?: 'Event';
   createdAt?: Maybe<Scalars['DateTime']['output']>;
@@ -76,11 +113,47 @@ export type EventEdge = {
   node?: Maybe<Event>;
 };
 
+export type GameStats = {
+  __typename?: 'GameStats';
+  entity?: Maybe<Entity>;
+  next_word_position?: Maybe<Scalars['u32']['output']>;
+};
+
+export type GameStatsConnection = {
+  __typename?: 'GameStatsConnection';
+  edges?: Maybe<Array<Maybe<GameStatsEdge>>>;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type GameStatsEdge = {
+  __typename?: 'GameStatsEdge';
+  cursor: Scalars['Cursor']['output'];
+  node?: Maybe<GameStats>;
+};
+
+export type GameStatsOrder = {
+  direction: Direction;
+  field: GameStatsOrderOrderField;
+};
+
+export enum GameStatsOrderOrderField {
+  NextWordPosition = 'NEXT_WORD_POSITION'
+}
+
+export type GameStatsWhereInput = {
+  next_word_position?: InputMaybe<Scalars['Int']['input']>;
+  next_word_positionGT?: InputMaybe<Scalars['Int']['input']>;
+  next_word_positionGTE?: InputMaybe<Scalars['Int']['input']>;
+  next_word_positionLT?: InputMaybe<Scalars['Int']['input']>;
+  next_word_positionLTE?: InputMaybe<Scalars['Int']['input']>;
+  next_word_positionNEQ?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type Player = {
   __typename?: 'Player';
   entity?: Maybe<Entity>;
-  last_try?: Maybe<Scalars['u256']['output']>;
-  points?: Maybe<Scalars['u256']['output']>;
+  last_try?: Maybe<Scalars['u64']['output']>;
+  points?: Maybe<Scalars['u64']['output']>;
 };
 
 export type PlayerConnection = {
@@ -105,36 +178,36 @@ export enum PlayerOrderOrderField {
   Points = 'POINTS'
 }
 
-export type PlayerStatsByDay = {
-  __typename?: 'PlayerStatsByDay';
+export type PlayerStats = {
+  __typename?: 'PlayerStats';
   entity?: Maybe<Entity>;
   remaining_tries?: Maybe<Scalars['u8']['output']>;
   won?: Maybe<Scalars['bool']['output']>;
 };
 
-export type PlayerStatsByDayConnection = {
-  __typename?: 'PlayerStatsByDayConnection';
-  edges?: Maybe<Array<Maybe<PlayerStatsByDayEdge>>>;
+export type PlayerStatsConnection = {
+  __typename?: 'PlayerStatsConnection';
+  edges?: Maybe<Array<Maybe<PlayerStatsEdge>>>;
   totalCount: Scalars['Int']['output'];
 };
 
-export type PlayerStatsByDayEdge = {
-  __typename?: 'PlayerStatsByDayEdge';
+export type PlayerStatsEdge = {
+  __typename?: 'PlayerStatsEdge';
   cursor: Scalars['Cursor']['output'];
-  node?: Maybe<PlayerStatsByDay>;
+  node?: Maybe<PlayerStats>;
 };
 
-export type PlayerStatsByDayOrder = {
+export type PlayerStatsOrder = {
   direction: Direction;
-  field: PlayerStatsByDayOrderOrderField;
+  field: PlayerStatsOrderOrderField;
 };
 
-export enum PlayerStatsByDayOrderOrderField {
+export enum PlayerStatsOrderOrderField {
   RemainingTries = 'REMAINING_TRIES',
   Won = 'WON'
 }
 
-export type PlayerStatsByDayWhereInput = {
+export type PlayerStatsWhereInput = {
   remaining_tries?: InputMaybe<Scalars['Int']['input']>;
   remaining_triesGT?: InputMaybe<Scalars['Int']['input']>;
   remaining_triesGTE?: InputMaybe<Scalars['Int']['input']>;
@@ -150,18 +223,18 @@ export type PlayerStatsByDayWhereInput = {
 };
 
 export type PlayerWhereInput = {
-  last_try?: InputMaybe<Scalars['String']['input']>;
-  last_tryGT?: InputMaybe<Scalars['String']['input']>;
-  last_tryGTE?: InputMaybe<Scalars['String']['input']>;
-  last_tryLT?: InputMaybe<Scalars['String']['input']>;
-  last_tryLTE?: InputMaybe<Scalars['String']['input']>;
-  last_tryNEQ?: InputMaybe<Scalars['String']['input']>;
-  points?: InputMaybe<Scalars['String']['input']>;
-  pointsGT?: InputMaybe<Scalars['String']['input']>;
-  pointsGTE?: InputMaybe<Scalars['String']['input']>;
-  pointsLT?: InputMaybe<Scalars['String']['input']>;
-  pointsLTE?: InputMaybe<Scalars['String']['input']>;
-  pointsNEQ?: InputMaybe<Scalars['String']['input']>;
+  last_try?: InputMaybe<Scalars['Int']['input']>;
+  last_tryGT?: InputMaybe<Scalars['Int']['input']>;
+  last_tryGTE?: InputMaybe<Scalars['Int']['input']>;
+  last_tryLT?: InputMaybe<Scalars['Int']['input']>;
+  last_tryLTE?: InputMaybe<Scalars['Int']['input']>;
+  last_tryNEQ?: InputMaybe<Scalars['Int']['input']>;
+  points?: InputMaybe<Scalars['Int']['input']>;
+  pointsGT?: InputMaybe<Scalars['Int']['input']>;
+  pointsGTE?: InputMaybe<Scalars['Int']['input']>;
+  pointsLT?: InputMaybe<Scalars['Int']['input']>;
+  pointsLTE?: InputMaybe<Scalars['Int']['input']>;
+  pointsNEQ?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type PlayerWordAttempts = {
@@ -212,11 +285,14 @@ export type Query = {
   __typename?: 'Query';
   entities?: Maybe<EntityConnection>;
   entity: Entity;
+  epocComponents?: Maybe<EpocConnection>;
   event: Event;
   events?: Maybe<EventConnection>;
+  gamestatsComponents?: Maybe<GameStatsConnection>;
   playerComponents?: Maybe<PlayerConnection>;
-  playerstatsbydayComponents?: Maybe<PlayerStatsByDayConnection>;
+  playerstatsComponents?: Maybe<PlayerStatsConnection>;
   playerwordattemptsComponents?: Maybe<PlayerWordAttemptsConnection>;
+  rankingComponents?: Maybe<RankingConnection>;
   system: System;
   systemCall: SystemCall;
   systemCalls?: Maybe<SystemCallConnection>;
@@ -239,8 +315,28 @@ export type QueryEntityArgs = {
 };
 
 
+export type QueryEpocComponentsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<EpocOrder>;
+  where?: InputMaybe<EpocWhereInput>;
+};
+
+
 export type QueryEventArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryGamestatsComponentsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<GameStatsOrder>;
+  where?: InputMaybe<GameStatsWhereInput>;
 };
 
 
@@ -254,13 +350,13 @@ export type QueryPlayerComponentsArgs = {
 };
 
 
-export type QueryPlayerstatsbydayComponentsArgs = {
+export type QueryPlayerstatsComponentsArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
   before?: InputMaybe<Scalars['Cursor']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  order?: InputMaybe<PlayerStatsByDayOrder>;
-  where?: InputMaybe<PlayerStatsByDayWhereInput>;
+  order?: InputMaybe<PlayerStatsOrder>;
+  where?: InputMaybe<PlayerStatsWhereInput>;
 };
 
 
@@ -271,6 +367,16 @@ export type QueryPlayerwordattemptsComponentsArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   order?: InputMaybe<PlayerWordAttemptsOrder>;
   where?: InputMaybe<PlayerWordAttemptsWhereInput>;
+};
+
+
+export type QueryRankingComponentsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<RankingOrder>;
+  where?: InputMaybe<RankingWhereInput>;
 };
 
 
@@ -291,6 +397,50 @@ export type QueryWordComponentsArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   order?: InputMaybe<WordOrder>;
   where?: InputMaybe<WordWhereInput>;
+};
+
+export type Ranking = {
+  __typename?: 'Ranking';
+  address?: Maybe<Scalars['ContractAddress']['output']>;
+  entity?: Maybe<Entity>;
+  points?: Maybe<Scalars['u64']['output']>;
+};
+
+export type RankingConnection = {
+  __typename?: 'RankingConnection';
+  edges?: Maybe<Array<Maybe<RankingEdge>>>;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type RankingEdge = {
+  __typename?: 'RankingEdge';
+  cursor: Scalars['Cursor']['output'];
+  node?: Maybe<Ranking>;
+};
+
+export type RankingOrder = {
+  direction: Direction;
+  field: RankingOrderOrderField;
+};
+
+export enum RankingOrderOrderField {
+  Address = 'ADDRESS',
+  Points = 'POINTS'
+}
+
+export type RankingWhereInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  addressGT?: InputMaybe<Scalars['String']['input']>;
+  addressGTE?: InputMaybe<Scalars['String']['input']>;
+  addressLT?: InputMaybe<Scalars['String']['input']>;
+  addressLTE?: InputMaybe<Scalars['String']['input']>;
+  addressNEQ?: InputMaybe<Scalars['String']['input']>;
+  points?: InputMaybe<Scalars['Int']['input']>;
+  pointsGT?: InputMaybe<Scalars['Int']['input']>;
+  pointsGTE?: InputMaybe<Scalars['Int']['input']>;
+  pointsLT?: InputMaybe<Scalars['Int']['input']>;
+  pointsLTE?: InputMaybe<Scalars['Int']['input']>;
+  pointsNEQ?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type System = {
@@ -341,7 +491,6 @@ export type Word = {
   __typename?: 'Word';
   characters?: Maybe<Scalars['u32']['output']>;
   entity?: Maybe<Entity>;
-  len?: Maybe<Scalars['u8']['output']>;
 };
 
 export type WordConnection = {
@@ -362,8 +511,7 @@ export type WordOrder = {
 };
 
 export enum WordOrderOrderField {
-  Characters = 'CHARACTERS',
-  Len = 'LEN'
+  Characters = 'CHARACTERS'
 }
 
 export type WordWhereInput = {
@@ -373,18 +521,12 @@ export type WordWhereInput = {
   charactersLT?: InputMaybe<Scalars['Int']['input']>;
   charactersLTE?: InputMaybe<Scalars['Int']['input']>;
   charactersNEQ?: InputMaybe<Scalars['Int']['input']>;
-  len?: InputMaybe<Scalars['Int']['input']>;
-  lenGT?: InputMaybe<Scalars['Int']['input']>;
-  lenGTE?: InputMaybe<Scalars['Int']['input']>;
-  lenLT?: InputMaybe<Scalars['Int']['input']>;
-  lenLTE?: InputMaybe<Scalars['Int']['input']>;
-  lenNEQ?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type GetEntitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetEntitiesQuery = { __typename?: 'Query', entities?: { __typename?: 'EntityConnection', edges?: Array<{ __typename?: 'EntityEdge', node?: { __typename?: 'Entity', keys?: Array<string | null> | null, components?: Array<{ __typename: 'Player', points?: any | null, last_try?: any | null } | { __typename: 'PlayerStatsByDay', won?: any | null, remaining_tries?: any | null } | { __typename: 'PlayerWordAttempts', word_attempt?: any | null, word_hits?: any | null } | { __typename: 'Word', characters?: any | null, len?: any | null } | null> | null } | null } | null> | null } | null };
+export type GetEntitiesQuery = { __typename?: 'Query', entities?: { __typename?: 'EntityConnection', edges?: Array<{ __typename?: 'EntityEdge', node?: { __typename?: 'Entity', keys?: Array<string | null> | null, components?: Array<{ __typename: 'Epoc', epoc?: any | null } | { __typename: 'GameStats', next_word_position?: any | null } | { __typename: 'Player', points?: any | null, last_try?: any | null } | { __typename: 'PlayerStats', won?: any | null, remaining_tries?: any | null } | { __typename: 'PlayerWordAttempts', word_attempt?: any | null, word_hits?: any | null } | { __typename: 'Ranking', address?: any | null, points?: any | null } | { __typename: 'Word', characters?: any | null } | null> | null } | null } | null> | null } | null };
 
 
 export const GetEntitiesDocument = gql`
@@ -395,21 +537,30 @@ export const GetEntitiesDocument = gql`
         keys
         components {
           __typename
+          ... on GameStats {
+            next_word_position
+          }
           ... on Word {
             characters
-            len
           }
           ... on Player {
             points
             last_try
           }
-          ... on PlayerStatsByDay {
+          ... on PlayerStats {
             won
             remaining_tries
           }
           ... on PlayerWordAttempts {
             word_attempt
             word_hits
+          }
+          ... on Ranking {
+            address
+            points
+          }
+          ... on Epoc {
+            epoc
           }
         }
       }
