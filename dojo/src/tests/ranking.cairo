@@ -8,7 +8,7 @@ mod RankingTest {
     use dojo::test_utils::spawn_test_world;
 
     use dojo_examples::components::{ranking, Ranking};
-    use dojo_examples::components::{player_stats, PlayerStats};
+    use dojo_examples::components::{player, Player};
 
     use dojo_examples::systems::ranking::ranking_system;
 
@@ -17,7 +17,7 @@ mod RankingTest {
     // helper setup function
     // reuse this function for all tests
     fn setup_world() -> IWorldDispatcher {
-        let mut components = array![player_stats::TEST_CLASS_HASH, ranking::TEST_CLASS_HASH,];
+        let mut components = array![player::TEST_CLASS_HASH, ranking::TEST_CLASS_HASH,];
 
         let mut systems = array![ranking_system::TEST_CLASS_HASH];
 

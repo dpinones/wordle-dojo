@@ -5,7 +5,7 @@ mod point_system {
     use traits::{Into, TryInto};
     use option::OptionTrait;
     use dojo::world::Context;
-    use dojo_examples::components::{PlayerStats, Ranking};
+    use dojo_examples::components::{Player};
 
     fn execute(ctx: Context, points: u64) {
         let player = get!(ctx.world, ctx.origin, Player);
