@@ -1,18 +1,25 @@
+
 export function isValidArray(input: any): input is any[] {
     return Array.isArray(input) && input != null;
 }
 
-export function getFirstComponentByType(entities: any[] | null | undefined, typename: string): any | null {
+export function getComponent(entities: any[] | null | undefined, keysFilter: string[]): any | null {
     if (!isValidArray(entities)) return null;
 
     for (let entity of entities) {
         if (isValidArray(entity?.node.components)) {
-            const foundComponent = entity.node.components.find((comp: any) => comp.__typename === typename);
-            if (foundComponent) return foundComponent;
+            if (entity.node.keys.length == keysFilter.length) {
+                if (entity.node.keys.every((k: string) => keysFilter.includes(k))) {
+                    return entity.node.components[0];
+                }
+            } 
         }
     }
-
     return null;
+}
+
+export function toHexPrefixedString(num: number): string {
+    return '0x' + num.toString(16);
 }
 
 export function extractAndCleanKey(entities?: any[] | null | undefined): string | null {

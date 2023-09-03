@@ -1,25 +1,23 @@
 import './App.css';
 import { useDojo } from './DojoContext';
 import { useComponentValue } from "@dojoengine/react";
+import { Direction, } from './dojo/createSystemCalls'
 import { EntityIndex, setComponent } from '@latticexyz/recs';
-import { useEffect } from 'react';
-import { getFirstComponentByType } from './utils';
-import { Word, Player, PlayerStatsByDay, PlayerWordAttempts } from './generated/graphql';
-
-// import game
-import '@fontsource/fascinate-inline';
-import '@fontsource/clear-sans';
-import '@fontsource/clear-sans/700.css';
-
-import { ChakraProvider } from '@chakra-ui/react';
-import theme from './game/theme';
-import Main from './game/components/Main';
+import { useEffect, useState } from 'react';
+import { getComponent, toHexPrefixedString } from './utils';
+import { Moves, Position, Player, PlayerStatsByDay, PlayerWordAttempts } from './generated/graphql';
 
 function App() {
+
+  const [player, setPlayer] = useState<Player>({});
+  const [turn, setTurn] = useState(0);
+  const [word, setWord] = useState('');
+  const [stats, setStats] = useState<PlayerStatsByDay>({});
+  const [history, setHistory] = useState<Array<PlayerWordAttempts>>([]);
+
   const {
     setup: {
-      systemCalls: { initiate_system, guess },
-      components: { Word, Player, PlayerStatsByDay, PlayerWordAttempts },
+      systemCalls: { add_word_system, guess },
       network: { graphSdk, call }
     },
     account: { create, list, select, account, isDeploying }
@@ -28,14 +26,6 @@ function App() {
   // entity id - this example uses the account address as the entity id
   const entityId = account.address;
 
-  // get current component values
-  // const position = useComponentValue(Position, parseInt(entityId.toString()) as EntityIndex);
-  // const moves = useComponentValue(Moves, parseInt(entityId.toString()) as EntityIndex);
-  const word = useComponentValue(Word, parseInt(entityId.toString()) as EntityIndex);
-  const player = useComponentValue(Player, parseInt(entityId.toString()) as EntityIndex);
-  const playerStatsByDay = useComponentValue(PlayerStatsByDay, parseInt(entityId.toString()) as EntityIndex);
-  const playerWordAttempts = useComponentValue(PlayerWordAttempts, parseInt(entityId.toString()) as EntityIndex);
-
   useEffect(() => {
 
     if (!entityId) return;
@@ -43,58 +33,85 @@ function App() {
     const fetchData = async () => {
       const { data } = await graphSdk.getEntities();
 
-      if (data) {
-        // let remaining = getFirstComponentByType(data.entities?.edges, 'Moves') as Moves;
-        // let position = getFirstComponentByType(data.entities?.edges, 'Position') as Position;
-        
-        let data_word = getFirstComponentByType(data.entities?.edges, 'Word') as Word;
-        // let data_player = getFirstComponentByType(data.entities?.edges, 'Player') as Player;
-        // let data_playerStatsByDay = getFirstComponentByType(data.entities?.edges, 'PlayerStatsByDay') as PlayerStatsByDay;
-        // let data_playerWordAttempts = getFirstComponentByType(data.entities?.edges, 'PlayerWordAttempts') as PlayerWordAttempts;
+      if (data && data.entities && data.entities.edges && data.entities.edges.length > 0) {
+        console.log('fetchData - data: ', data);
 
-        // setComponent(Moves, parseInt(entityId.toString()) as EntityIndex, { remaining: remaining.remaining })
-        // setComponent(Position, parseInt(entityId.toString()) as EntityIndex, { x: position.x, y: position.y })
+        // setPlayer(getComponent(data.entities?.edges, [entityId]))
+        // setStats(getComponent(data.entities?.edges, [entityId, toHexPrefixedString(19603)]))
         
-        setComponent(Word, parseInt(entityId.toString()) as EntityIndex, { characters: data_word.characters, len: data_word.len })
-        // setComponent(Player, parseInt(entityId.toString()) as EntityIndex, { points: data_player.points, last_try: data_player.last_try })
-        // setComponent(PlayerStatsByDay, parseInt(entityId.toString()) as EntityIndex, { won: data_playerStatsByDay.won, remaining_tries: data_playerStatsByDay.remaining_tries })
-        // setComponent(PlayerWordAttempts, parseInt(entityId.toString()) as EntityIndex, { word_attempt: data_playerWordAttempts.word_attempt, word_hits: data_playerWordAttempts.word_hits })
+        // let remaining_tries = getComponent(data.entities?.edges, [entityId, toHexPrefixedString(19603)]).remaining_tries;
+        // const historial: PlayerWordAttempts[] = [];
+        // for (let i = 1; i <= remaining_tries; i++) {
+        //   historial.push(getComponent(data.entities?.edges, [entityId, toHexPrefixedString(20230901), toHexPrefixedString(i)]));
+        // }
+        // setHistory(historial)
+        // setTurn(6 - remaining_tries)  
+        setWord(getComponent(data.entities?.edges, [toHexPrefixedString(19603)]).characters)
       }
+      // console.log('player: ', player)
+      // console.log('stats: ', stats)
+      // console.log('history: ', history)
+      // console.log('turn: ', turn) 
+      console.log('word: ', getComponent(data.entities?.edges, [toHexPrefixedString(19603)]))
     }
     fetchData();
-  }, [word]);
-
+  }, [account.address]);
 
   return (
     <>
-      {/* <button onClick={create}>{isDeploying ? "deploying burner" : "create burner"}</button>
+      <style>
+        {`
+          .card {
+            padding: 20px;
+            margin: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+          }
+          .card-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            margin-bottom: 10px;
+          }
+          .card-button:hover {
+            background-color: #0056b3;
+          }
+        `}
+      </style>
       <div className="card">
-        select signer:{" "}
-        <select onChange={e => select(e.target.value)}>
-          {list().map((account, index) => {
-            return <option value={account.address} key={index}>{account.address}</option>
-          })}
-        </select>
+        <button className="card-button" onClick={() => add_word_system(account, 120304050)}>Add Word</button>
+        <div>
+          <strong>Word:</strong> {word}
+        </div>
+        <div>
+          <strong>Player:</strong> 
+          {player ? `${player.points} Points, Last Try: ${player.last_try}` : 'Need to initiate_system'}
+        </div>
+        <div>
+          <strong>Turn:</strong> {turn}
+        </div>
+        <div>
+          <strong>Stats:</strong> 
+          {stats ? `Won: ${stats.won}, Remaining Tries: ${stats.remaining_tries}` : 'Need to initiate_system'}
+        </div>
+        <div>
+          <strong>History:</strong>
+          <ul>
+            {history.map((item, index) => (
+              <li key={index}>
+                Word Attempt: {item.word_attempt}, Word Hits: {item.word_hits}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
       <div className="card">
-        <button onClick={() => spawn(account)}>Spawn</button>
-        <div>Moves Left: {moves ? `${moves['remaining']}` : 'Need to Spawn'}</div>
-        <div>Position: {position ? `${position['x']}, ${position['y']}` : 'Need to Spawn'}</div>
+        <button className="card-button" onClick={() => guess(account)}>Guess</button>
       </div>
-      <div className="card">
-        <button onClick={() => move(account, Direction.Up)}>Move Up</button> <br />
-        <button onClick={() => move(account, Direction.Left)}>Move Left</button>
-        <button onClick={() => move(account, Direction.Right)}>Move Right</button> <br />
-        <button onClick={() => move(account, Direction.Down)}>Move Down</button>
-      </div> */}
-
-      <div className="card">
-        <button onClick={() => initiate_system(account)}>Initiate</button>
-        <div>Word: {word ? `${word['characters']}, ${word['len']}` : 'Need to Spawn'}</div>
-      </div>
-      <ChakraProvider theme={theme}>
-        <Main />
-      </ChakraProvider>
     </>
   );
 }

@@ -5,21 +5,30 @@ query getEntities {
         keys
         components {
           __typename
+          ... on GameStats {
+            next_word_position
+          }
           ... on Word {
             characters
-            len
           }
           ... on Player {
             points
             last_try
           }
-          ... on PlayerStatsByDay {
+          ... on PlayerStats {
             won
             remaining_tries
           }
           ... on PlayerWordAttempts {
             word_attempt
             word_hits
+          }
+          ... on Ranking {
+            address
+            points
+          }
+          ... on Epoc {
+            epoc
           }
         }
       }
