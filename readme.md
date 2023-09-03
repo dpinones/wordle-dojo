@@ -2,7 +2,9 @@
 ![dojoWORLDE](https://github.com/dpinones/wordle-dojo/assets/30808181/8fe85353-f696-4b1d-9648-24cc83102806)
 
 ## Dojo Wordle
+Dojo Wordle has a daily word for you to guess, supports loading new words through the 'add_word_system.' When we load words using this system, they will automatically be set for the next day.
 
+It has a points system and a ranking (unfortunately, the ranking is still a work in progress).
 
 ### Initial Setup
 
