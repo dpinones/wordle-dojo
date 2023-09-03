@@ -12,8 +12,8 @@ mod guess_system {
     const ORANGE: u32 = 1;
     const GRAY: u32 = 0;
 
-    const BONUS_POINTS: u256 = 100;
-    const POINT_UNIT: u256 = 10;
+    const BONUS_POINTS: u64 = 100;
+    const POINT_UNIT: u64 = 10;
 
     // TODO: CHECK VALUE
     const ALL_HITS: u32 = 22222;
@@ -80,7 +80,7 @@ mod guess_system {
         }
     }
 
-    fn update_player_points(ctx: Context, player: Player, points: u256) {
+    fn update_player_points(ctx: Context, player: Player, points: u64) {
         set!(
             ctx.world,
             (Player {

@@ -19,7 +19,7 @@ struct Word {
 struct Player {
     #[key]
     player: ContractAddress,
-    points: u256,
+    points: u64,
     last_try: u64
 }
 
@@ -51,5 +51,5 @@ struct Ranking {
     #[key]
     rank_number: u64,
     address: ContractAddress,
-    points: u256,
+    points: u64,
 }

@@ -38,7 +38,7 @@ mod GuessSystemTest {
 
     #[test]
     #[available_gas(30000000)]
-    fn test_guess_player_guesses_the_word() {// starknet::testing::set_block_timestamp(2_u64); // didnt work :(
+    fn test_guess_player_guesses_the_word() { // starknet::testing::set_block_timestamp(2_u64); // didnt work :(
     // // This should be 2
     // let epoc_day = 0;
 
