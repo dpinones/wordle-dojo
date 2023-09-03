@@ -5,7 +5,7 @@ mod add_word_system {
     use traits::{Into, TryInto};
     use option::OptionTrait;
     use dojo::world::Context;
-    use dojo_examples::components::{Word, GameStats, Epoc};
+    use dojo_examples::components::{Word, GameStats};
 
     const WORDLE_DOJO_ID: u32 = 1;
 
