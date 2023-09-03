@@ -1,3 +1,6 @@
+
+![dojoWORLDE](https://github.com/dpinones/wordle-dojo/assets/30808181/8fe85353-f696-4b1d-9648-24cc83102806)
+
 ## Dojo Wordle
 
 
