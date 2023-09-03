@@ -51,5 +51,12 @@ struct Ranking {
     #[key]
     rank_number: u64,
     address: ContractAddress,
-    points: u64,
+    points: u64
+}
+
+#[derive(Component, Copy, Drop, Serde, SerdeLen)]
+struct Epoc {
+    #[key]
+    i: u64,
+    epoc: u64
 }
