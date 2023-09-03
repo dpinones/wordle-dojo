@@ -45,3 +45,11 @@ struct PlayerWordAttempts {
     word_attempt: u32,
     word_hits: u32
 }
+
+#[derive(Component, Copy, Drop, Serde, SerdeLen)]
+struct Ranking {
+    #[key]
+    rank_number: u64,
+    address: ContractAddress,
+    points: u256,
+}
