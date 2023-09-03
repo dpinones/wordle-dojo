@@ -624,7 +624,7 @@
         }
       ],
       "outputs": [],
-      "class_hash": "0x78707b20ab8bd6e37241457b135ea809f19802b7cfa58ad6c6831df4710b77",
+      "class_hash": "0x79d0024a8d090828e0a94f3212a274b3a1dc3ff9ee3d8f76b68f2ded07bf7f7",
       "dependencies": [],
       "abi": [
         {
@@ -695,11 +695,11 @@
       ]
     },
     {
-      "name": "add_words",
+      "name": "add_words_system",
       "inputs": [
         {
           "name": "self",
-          "type": "@dojo_examples::systems::add_word::add_words::ContractState"
+          "type": "@dojo_examples::systems::add_word::add_words_system::ContractState"
         },
         {
           "name": "words",
@@ -707,7 +707,7 @@
         }
       ],
       "outputs": [],
-      "class_hash": "0x9230cf3667e18da999044d36a4d775b55cdaf3af01bd74ba5d7ca1a9cf2877",
+      "class_hash": "0x4dc7b57a5baf909f7059801dfa6179d4846565a852bac87b4882bf5cf1ec894",
       "dependencies": [],
       "abi": [
         {
@@ -771,7 +771,7 @@
         },
         {
           "type": "event",
-          "name": "dojo_examples::systems::add_word::add_words::Event",
+          "name": "dojo_examples::systems::add_word::add_words_system::Event",
           "kind": "enum",
           "variants": []
         }
@@ -790,7 +790,7 @@
         }
       ],
       "outputs": [],
-      "class_hash": "0x144790051d2ae6bb24ac9aea17a5087d6f8a793d1838d205cdf2235e6bbe37a",
+      "class_hash": "0x49fae46cad3a9df4ebff79b7ffd4547a9e85b0c792122a94271af6109de744f",
       "dependencies": [],
       "abi": [
         {
@@ -866,10 +866,14 @@
         {
           "name": "self",
           "type": "@dojo_examples::systems::ranking::ranking_system::ContractState"
+        },
+        {
+          "name": "player_address",
+          "type": "core::starknet::contract_address::ContractAddress"
         }
       ],
       "outputs": [],
-      "class_hash": "0x437ad8afd66fb82b1d885ec2f40f072e8f160d37f230f6208be3df8c275b79e",
+      "class_hash": "0xb80c4f79ffe05865720fcaf506cdbe158d165a92905ddfd88acb41d6eb1a5b",
       "dependencies": [],
       "abi": [
         {
@@ -919,6 +923,10 @@
           "type": "function",
           "name": "execute",
           "inputs": [
+            {
+              "name": "player_address",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
             {
               "name": "ctx",
               "type": "dojo::world::Context"
@@ -1511,77 +1519,6 @@
         {
           "type": "event",
           "name": "dojo_examples::components::ranking::Event",
-          "kind": "enum",
-          "variants": []
-        }
-      ]
-    },
-    {
-      "name": "Epoc",
-      "members": [
-        {
-          "name": "i",
-          "type": "u64",
-          "key": true
-        },
-        {
-          "name": "epoc",
-          "type": "u64",
-          "key": false
-        }
-      ],
-      "class_hash": "0x3c63e1251ec7832925113a5211694b026656e2bd827370ea74ae54d389101c",
-      "abi": [
-        {
-          "type": "function",
-          "name": "name",
-          "inputs": [],
-          "outputs": [
-            {
-              "type": "core::felt252"
-            }
-          ],
-          "state_mutability": "view"
-        },
-        {
-          "type": "function",
-          "name": "size",
-          "inputs": [],
-          "outputs": [
-            {
-              "type": "core::integer::u32"
-            }
-          ],
-          "state_mutability": "view"
-        },
-        {
-          "type": "enum",
-          "name": "core::bool",
-          "variants": [
-            {
-              "name": "False",
-              "type": "()"
-            },
-            {
-              "name": "True",
-              "type": "()"
-            }
-          ]
-        },
-        {
-          "type": "function",
-          "name": "schema",
-          "inputs": [],
-          "outputs": [
-            {
-              "type": "core::array::Array::<(core::felt252, core::felt252, core::bool)>"
-            }
-          ],
-          "state_mutability": "view"
-        },
-        {
-          "type": "event",
-          "name": "dojo_examples::components::epoc::Event",
           "kind": "enum",
           "variants": []
         }

@@ -27,9 +27,6 @@ query getEntities {
             address
             points
           }
-          ... on Epoc {
-            epoc
-          }
         }
       }
     }

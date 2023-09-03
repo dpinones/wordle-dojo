@@ -26,7 +26,7 @@ export type Scalars = {
   u64: { input: any; output: any; }
 };
 
-export type ComponentUnion = Epoc | GameStats | Player | PlayerStats | PlayerWordAttempts | Ranking | Word;
+export type ComponentUnion = GameStats | Player | PlayerStats | PlayerWordAttempts | Ranking | Word;
 
 export enum Direction {
   Asc = 'ASC',
@@ -53,42 +53,6 @@ export type EntityEdge = {
   __typename?: 'EntityEdge';
   cursor: Scalars['Cursor']['output'];
   node?: Maybe<Entity>;
-};
-
-export type Epoc = {
-  __typename?: 'Epoc';
-  entity?: Maybe<Entity>;
-  epoc?: Maybe<Scalars['u64']['output']>;
-};
-
-export type EpocConnection = {
-  __typename?: 'EpocConnection';
-  edges?: Maybe<Array<Maybe<EpocEdge>>>;
-  totalCount: Scalars['Int']['output'];
-};
-
-export type EpocEdge = {
-  __typename?: 'EpocEdge';
-  cursor: Scalars['Cursor']['output'];
-  node?: Maybe<Epoc>;
-};
-
-export type EpocOrder = {
-  direction: Direction;
-  field: EpocOrderOrderField;
-};
-
-export enum EpocOrderOrderField {
-  Epoc = 'EPOC'
-}
-
-export type EpocWhereInput = {
-  epoc?: InputMaybe<Scalars['Int']['input']>;
-  epocGT?: InputMaybe<Scalars['Int']['input']>;
-  epocGTE?: InputMaybe<Scalars['Int']['input']>;
-  epocLT?: InputMaybe<Scalars['Int']['input']>;
-  epocLTE?: InputMaybe<Scalars['Int']['input']>;
-  epocNEQ?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Event = {
@@ -285,7 +249,6 @@ export type Query = {
   __typename?: 'Query';
   entities?: Maybe<EntityConnection>;
   entity: Entity;
-  epocComponents?: Maybe<EpocConnection>;
   event: Event;
   events?: Maybe<EventConnection>;
   gamestatsComponents?: Maybe<GameStatsConnection>;
@@ -312,16 +275,6 @@ export type QueryEntitiesArgs = {
 
 export type QueryEntityArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type QueryEpocComponentsArgs = {
-  after?: InputMaybe<Scalars['Cursor']['input']>;
-  before?: InputMaybe<Scalars['Cursor']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  order?: InputMaybe<EpocOrder>;
-  where?: InputMaybe<EpocWhereInput>;
 };
 
 
@@ -526,7 +479,7 @@ export type WordWhereInput = {
 export type GetEntitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetEntitiesQuery = { __typename?: 'Query', entities?: { __typename?: 'EntityConnection', edges?: Array<{ __typename?: 'EntityEdge', node?: { __typename?: 'Entity', keys?: Array<string | null> | null, components?: Array<{ __typename: 'Epoc', epoc?: any | null } | { __typename: 'GameStats', next_word_position?: any | null } | { __typename: 'Player', points?: any | null, last_try?: any | null } | { __typename: 'PlayerStats', won?: any | null, remaining_tries?: any | null } | { __typename: 'PlayerWordAttempts', word_attempt?: any | null, word_hits?: any | null } | { __typename: 'Ranking', address?: any | null, points?: any | null } | { __typename: 'Word', characters?: any | null } | null> | null } | null } | null> | null } | null };
+export type GetEntitiesQuery = { __typename?: 'Query', entities?: { __typename?: 'EntityConnection', edges?: Array<{ __typename?: 'EntityEdge', node?: { __typename?: 'Entity', keys?: Array<string | null> | null, components?: Array<{ __typename: 'GameStats', next_word_position?: any | null } | { __typename: 'Player', points?: any | null, last_try?: any | null } | { __typename: 'PlayerStats', won?: any | null, remaining_tries?: any | null } | { __typename: 'PlayerWordAttempts', word_attempt?: any | null, word_hits?: any | null } | { __typename: 'Ranking', address?: any | null, points?: any | null } | { __typename: 'Word', characters?: any | null } | null> | null } | null } | null> | null } | null };
 
 
 export const GetEntitiesDocument = gql`
@@ -558,9 +511,6 @@ export const GetEntitiesDocument = gql`
           ... on Ranking {
             address
             points
-          }
-          ... on Epoc {
-            epoc
           }
         }
       }

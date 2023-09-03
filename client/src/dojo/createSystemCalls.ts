@@ -23,9 +23,9 @@ export function createSystemCalls(
         }
     };
 
-    const guess = async (signer: Account) => {
+    const guess = async (signer: Account, attempt: number) => {
         try {
-            const tx = await execute(signer, "guess", []);
+            const tx = await execute(signer, "guess_system", [attempt]);
             console.log(tx)
             await signer.waitForTransaction(tx.transaction_hash, { retryInterval: 100 })
         } catch (e) {

@@ -8,15 +8,15 @@ mod guess_system {
     use dojo_examples::components::{Word, Player, PlayerStats, PlayerWordAttempts, GameStats};
     use debug::PrintTrait;
 
-    const GREEN: u32 = 2;
-    const ORANGE: u32 = 1;
-    const GRAY: u32 = 0;
+    const GREEN: u32 = 3;
+    const YELLOW: u32 = 2;
+    const GRAY: u32 = 1;
 
     const BONUS_POINTS: u64 = 100;
     const POINT_UNIT: u64 = 10;
 
     // TODO: CHECK VALUE
-    const ALL_HITS: u32 = 22222;
+    const ALL_HITS: u32 = 33333;
     const TOTAL_DAILY_TRIES: u8 = 6;
     const WORDS_LEN: u32 = 5;
 
@@ -44,7 +44,7 @@ mod guess_system {
                  POINT_UNIT * player_stats.remaining_tries.into()
             };
             ctx.world.execute('point_system', array![points.into()]);
-            ctx.world.execute('ranking_system', array![ctx.origin.into()]);
+            // ctx.world.execute('ranking_system', array![ctx.origin.into()]);
             player_won = true;
         }
         
@@ -109,7 +109,7 @@ mod guess_system {
             if player_word_array.at(i) == word_of_the_day_array.at(i) {
                 hits += GREEN * pow(10, WORDS_LEN - i - 1);
             } else if contains_character(@word_of_the_day_array, *player_word_array.at(i)) {
-                hits += ORANGE * pow(10, WORDS_LEN - i - 1);
+                hits += YELLOW * pow(10, WORDS_LEN - i - 1);
             } else {
                 hits += GRAY * pow(10, WORDS_LEN - i - 1);
             }
