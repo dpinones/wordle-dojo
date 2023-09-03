@@ -51,3 +51,6 @@ cd client && yarn && yarn dev
 ```
 
 Upon completion, launch your browser and navigate to http://localhost:5173/.
+
+![Screenshot from 2023-09-03 20-47-10](https://github.com/dpinones/wordle-dojo/assets/30808181/18335744-e9ce-407b-898d-d40b047e2bd0)
+
