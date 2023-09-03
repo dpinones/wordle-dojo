@@ -107,11 +107,11 @@ mod guess_system {
                 break;
             }
             if player_word_array.at(i) == word_of_the_day_array.at(i) {
-                hits += GREEN * pow(10, WORDS_LEN - i);
+                hits += GREEN * pow(10, WORDS_LEN - i - 1);
             } else if contains_character(@word_of_the_day_array, *player_word_array.at(i)) {
-                hits += ORANGE * pow(10, WORDS_LEN - i);
+                hits += ORANGE * pow(10, WORDS_LEN - i - 1);
             } else {
-                hits += GRAY * pow(10, WORDS_LEN - i);
+                hits += GRAY * pow(10, WORDS_LEN - i - 1);
             }
             i += 1;
         };
