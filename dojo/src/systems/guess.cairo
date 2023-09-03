@@ -21,7 +21,7 @@ mod guess_system {
     const WORDS_LEN: u32 = 5;
 
     fn execute(ctx: Context, attempt: u32) {
-        let epoc_day = get_epoc_day();
+        let epoc_day = starknet::get_block_timestamp() / 86400;
         let mut player_stats = get!(ctx.world, (ctx.origin, epoc_day), PlayerStats);
         let player = get!(ctx.world, ctx.origin, Player);
 
@@ -37,14 +37,12 @@ mod guess_system {
         );
 
         if attempt_hits == ALL_HITS {
-            if player_stats.remaining_tries == TOTAL_DAILY_TRIES {
-                let sum_ponts = BONUS_POINTS + POINT_UNIT * player_stats.remaining_tries.into();
-                update_player_points(
-                    ctx, player, BONUS_POINTS + POINT_UNIT * player_stats.remaining_tries.into()
-                );
+            let mut points: u64 = if player_stats.remaining_tries == TOTAL_DAILY_TRIES {
+                BONUS_POINTS + POINT_UNIT * player_stats.remaining_tries.into()
             } else {
-                update_player_points(ctx, player, POINT_UNIT * player_stats.remaining_tries.into());
-            }
+                 POINT_UNIT * player_stats.remaining_tries.into()
+            };
+            ctx.world.execute('point_system', array![points.into()]);
             update_player_stats(ctx, player_stats, true);
         } else {
             update_player_stats(ctx, player_stats, false);
@@ -76,7 +74,7 @@ mod guess_system {
             player: *player_stats.player,
             epoc_day: *player_stats.epoc_day,
             won: false,
-            remaining_tries: 6
+            remaining_tries: TOTAL_DAILY_TRIES
         }
     }
 
@@ -109,7 +107,7 @@ mod guess_system {
         let mut hits = 0;
         let mut i = 0;
         loop {
-            if (i == 5) {
+            if (i == WORDS_LEN) {
                 break;
             }
             if player_word_array.at(i) == word_of_the_day_array.at(i) {
@@ -193,9 +191,5 @@ mod guess_system {
         } else {
             pow(x * x, n / 2)
         }
-    }
-
-    fn get_epoc_day() -> u64 {
-        starknet::get_block_timestamp() / 86400
     }
 }
