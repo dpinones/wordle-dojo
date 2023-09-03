@@ -23,7 +23,6 @@ struct Player {
     last_try: u64
 }
 
-// (player, epoc_day) -> value
 #[derive(Component, Copy, Drop, Serde, SerdeLen)]
 struct PlayerStats {
     #[key]
@@ -52,11 +51,4 @@ struct Ranking {
     rank_number: u64,
     address: ContractAddress,
     points: u64
-}
-
-#[derive(Component, Copy, Drop, Serde, SerdeLen)]
-struct Epoc {
-    #[key]
-    i: u64,
-    epoc: u64
 }

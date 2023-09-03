@@ -6,20 +6,12 @@ mod add_word_system {
     use option::OptionTrait;
     use dojo::world::Context;
     use dojo_examples::components::{Word, GameStats, Epoc};
-    use starknet::get_block_timestamp;
-    use debug::PrintTrait;
 
     const WORDLE_DOJO_ID: u32 = 1;
 
     fn execute(ctx: Context, word: u32) {
         let game_stats = get!(ctx.world, WORDLE_DOJO_ID, GameStats);
-        let epoc_day = get_block_timestamp() / 86400;
-
-        // TODO: REMOVE 
-        set!(
-            ctx.world,
-            (Epoc { i: 1 , epoc: epoc_day})
-        );
+        let epoc_day = starknet::get_block_timestamp() / 86400;
 
         set!(
             ctx.world,
@@ -38,41 +30,23 @@ mod add_word_system {
 }
 
 #[system]
-mod add_words {
+mod add_words_system {
     use array::ArrayTrait;
-    use box::BoxTrait;
     use traits::{Into, TryInto};
     use option::OptionTrait;
     use dojo::world::Context;
-    use dojo_examples::components::{Word, GameStats};
-    use starknet::get_block_timestamp;
-
-    const WORDLE_DOJO_ID: u32 = 1;
 
     fn execute(ctx: Context, words: Array<u32>) {
-        let game_stats = get!(ctx.world, WORDLE_DOJO_ID, GameStats);
-        let epoc_day = get_block_timestamp() / 86400;
-        let mut next_word_position_plus_epoc_day = epoc_day + game_stats.next_word_position.into();
         let mut i = 0;
         loop {
-            if i == words.len() - 1 {
+            if i == words.len() {
                 break;
             }
-            set!(
-                ctx.world,
-                (Word { epoc_day: next_word_position_plus_epoc_day, characters: *words.at(i), })
-            );
+            let word_call_data = *words[i];
+            ctx.world.execute('add_word_system', array![word_call_data.into()]);
             i += 1;
-            next_word_position_plus_epoc_day += 1;
         };
-
-        set!(
-            ctx.world,
-            (GameStats {
-                id: WORDLE_DOJO_ID,
-                next_word_position: next_word_position_plus_epoc_day.try_into().unwrap(),
-            })
-        );
+        return ();
     }
 }
 
