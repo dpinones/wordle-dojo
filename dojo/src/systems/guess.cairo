@@ -44,6 +44,7 @@ mod guess_system {
                  POINT_UNIT * player_stats.remaining_tries.into()
             };
             ctx.world.execute('point_system', array![points.into()]);
+            ctx.world.execute('ranking_system', array![ctx.origin.into()]);
             player_won = true;
         }
         
