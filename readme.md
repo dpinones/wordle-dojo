@@ -1,10 +1,5 @@
-## Integrate React with Dojo: A Quick Start Guide
+## Dojo Wordle
 
-Dive into this straightforward example to understand how to meld React with Dojo.
-
-This integration taps into the powerful libraries designed by [Lattice](https://lattice.xyz/):
-
-- [recs](https://github.com/latticexyz/mud/tree/main/packages/recs)
 
 ### Initial Setup
 
@@ -24,40 +19,32 @@ dojoup
 
 For an in-depth setup guide, consult the [Dojo book](https://book.dojoengine.org/getting-started/quick-start.html).
 
-### Launch the Example in Under 30 Seconds
+### Launch Dojo Wordle
 
 After cloning the project, execute the following:
 
 1. **Terminal 1 - Katana**:
 
 ```console
-cd dojo-starter && katana --disable-fee
+cd dojo && katana --disable-fee
 ```
 
 2. **Terminal 2 - Contracts**:
 
 ```console
-cd dojo-starter && sozo build && sozo migrate
-
-// Basic Auth - This will allow burner Accounts to interact with the contracts
-sozo auth writer Position move
-sozo auth writer Position spawn
-sozo auth writer Moves move
-sozo auth writer Moves spawn
+cd dojo && sozo build && sozo migrate
 ```
 
-3. **Terminal 3 - Client**:
+3. **Terminal 3 - Torii**:
+
+```console
+cd dojo-starter && torii --world 0x7d1f066a910bd86f532fa9ca66766722c20d47462fb99fb2fb0e1030262f9c5
+```
+
+4. **Terminal 4 - Client**:
 
 ```console
 cd client && yarn && yarn dev
 ```
 
-4. **Terminal 4 - Torii**:
-
-Uncomment the 'world_address' parameter in `dojo-starter/Scarb.toml` then:
-
-```console
-cd dojo-starter && torii
-```
-
-Upon completion, launch your browser and navigate to http://localhost:5173/. You'll be greeted by the running example!
+Upon completion, launch your browser and navigate to http://localhost:5173/.
