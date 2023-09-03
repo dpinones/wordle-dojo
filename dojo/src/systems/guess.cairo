@@ -26,7 +26,7 @@ mod guess_system {
         let player = get!(ctx.world, ctx.origin, Player);
 
         // init player stats if doesnt play today yet   
-        player_stats = init_player_stats(ctx, @player_stats, @player, epoc_day);
+        player_stats = try_init_player_stats(ctx, @player_stats, player.last_try, epoc_day);
 
         assert(player_stats.remaining_tries > 0, 'You have no more attempts!');
         assert(player_stats.won == false, 'You already won today!');
@@ -36,6 +36,7 @@ mod guess_system {
             ctx, player_stats, attempt, word_of_the_day.characters
         );
 
+        let mut player_won = false;
         if attempt_hits == ALL_HITS {
             let mut points: u64 = if player_stats.remaining_tries == TOTAL_DAILY_TRIES {
                 BONUS_POINTS + POINT_UNIT * player_stats.remaining_tries.into()
@@ -43,10 +44,10 @@ mod guess_system {
                  POINT_UNIT * player_stats.remaining_tries.into()
             };
             ctx.world.execute('point_system', array![points.into()]);
-            update_player_stats(ctx, player_stats, true);
-        } else {
-            update_player_stats(ctx, player_stats, false);
+            player_won = true;
         }
+        
+        update_player_stats(ctx, player_stats, player_won);
 
         // Set last try to today 
         set!(
@@ -56,10 +57,10 @@ mod guess_system {
         return ();
     }
 
-    fn init_player_stats(
-        ctx: Context, player_stats: @PlayerStats, player: @Player, epoc_day: u64
+    fn try_init_player_stats(
+        ctx: Context, player_stats: @PlayerStats, player_last_try: u64, epoc_day: u64
     ) -> PlayerStats {
-        if epoc_day != *player.last_try {
+        if epoc_day > player_last_try {
             set!(
                 ctx.world,
                 (PlayerStats {
@@ -69,22 +70,16 @@ mod guess_system {
                     remaining_tries: TOTAL_DAILY_TRIES
                 })
             );
-        }
-        PlayerStats {
-            player: *player_stats.player,
-            epoc_day: *player_stats.epoc_day,
-            won: false,
-            remaining_tries: TOTAL_DAILY_TRIES
-        }
-    }
 
-    fn update_player_points(ctx: Context, player: Player, points: u64) {
-        set!(
-            ctx.world,
-            (Player {
-                player: player.player, points: player.points + points, last_try: player.last_try
-            })
-        );
+            PlayerStats {
+                player: *player_stats.player,
+                epoc_day: *player_stats.epoc_day,
+                won: false,  
+                remaining_tries: TOTAL_DAILY_TRIES
+            }
+        } else { 
+            *player_stats
+        }
     }
 
     fn update_player_stats(ctx: Context, player_stats: PlayerStats, won: bool) {
