@@ -38,7 +38,8 @@ mod GuessSystemTest {
 
     #[test]
     #[available_gas(30000000)]
-    fn test_guess_player_guesses_the_word() { // starknet::testing::set_block_timestamp(2_u64); // didnt work :(
+    fn test_guess_player_guesses_the_word() { 
+    // starknet::testing::set_block_timestamp(2_u64); // didnt work :(
     // // This should be 2
     // let epoc_day = 0;
 
@@ -155,6 +156,14 @@ mod CharactersIntoArrayTest {
         assert(*actual[3] == *expected[3], 'CharactersIntoArray error');
         assert(*actual[4] == *expected[4], 'CharactersIntoArray error');
         assert(actual.len() == 5, 'error');
+    }
+
+    #[test]
+    #[available_gas(2000000)]
+    #[should_panic(expected: ('wrong word len!',))]
+    fn giving_word_with_all_zeros() {
+        let input = 0000000000;
+        guess_system::characters_into_array(input);
     }
 
     #[test]
